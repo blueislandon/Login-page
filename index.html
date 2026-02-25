@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Cloud Vault</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input { margin: 5px 0; display: block; width: 200px; padding: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h3>1. Add New Password</h3>
+        <input type="text" id="site" placeholder="Website Name">
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button onclick="saveToCloud()">Secure Save</button>
+    </div>
+
+    <div class="box">
+        <h3>2. Your Stored Passwords</h3>
+        <input type="password" id="master" placeholder="Enter Master Key to View">
+        <button onclick="fetchFromCloud()">Show My Passwords</button>
+        <div id="displayArea"></div>
+    </div>
+
+    <script>
+        // PASTE YOUR KEYS HERE
+        const SUPABASE_URL = 'YOUR_URL_HERE'; 
+        const SUPABASE_KEY = 'YOUR_ANON_KEY_HERE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function saveToCloud() {
+            const site = document.getElementById('site').value;
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+            const master = document.getElementById('master').value;
+
+            if(!master) return alert("Please set a Master Key in the view box first!");
+
+            // Encrypt before it leaves your computer
+            const encrypted = CryptoJS.AES.encrypt(pass, master).toString();
+
+            const { error } = await supabaseClient.from('passwords').insert([
+                { website: site, username: user, password: encrypted }
+            ]);
+
+            if (error) alert("Error: " + error.message);
+            else alert("Saved to Cloud!");
+        }
+
+        async function fetchFromCloud() {
+            const master = document.getElementById('master').value;
+            if(!master) return alert("Enter Master Key to decrypt data!");
+
+            const { data, error } = await supabaseClient.from('passwords').select('*');
+
+            let html = "<ul>";
+            data.forEach(item => {
+                // Decrypt the scrambled text back into readable text
+                const bytes  = CryptoJS.AES.decrypt(item.password, master);
+                const originalPass = bytes.toString(CryptoJS.enc.Utf8);
+                
+                html += `<li><strong>${item.website}</strong>: ${originalPass}</li>`;
+            });
+            html += "</ul>";
+            document.getElementById('displayArea').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
