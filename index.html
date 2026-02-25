@@ -169,15 +169,15 @@
     <script>
         const SUPABASE_URL = 'https://fjbldtippwrdxynfwidx.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqYmxkdGlwcHdyZHh5bmZ3aWR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTMyMzIsImV4cCI6MjA4NzYyOTIzMn0.7EQHHbYGSPH1mI6kh-XuyMVWxaPrQ4qw7PIBcy-j8I0';
+        const MASTER = 'YOUR_CHOSEN_MASTER_KEY';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function saveToCloud() {
             const user = document.getElementById('user').value;
             const pass = document.getElementById('pass').value;
-            const master = document.getElementById('master').value;
 
             // Encrypt before it leaves your computer
-            const encrypted = CryptoJS.AES.encrypt(pass, master).toString();
+            const encrypted = CryptoJS.AES.encrypt(pass, MASTER).toString();
 
             const { error } = await supabaseClient.from('passwords').insert([
                 { username: user, password: encrypted }
