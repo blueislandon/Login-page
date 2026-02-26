@@ -176,7 +176,7 @@
             const user = document.getElementById('user').value;
             const pass = document.getElementById('pass').value;
 
-            const encrypted = SUPABASE_URL
+            const encrypted = pass
             
             const { error } = await supabaseClient.from('passwords').insert([
                 { username: user, password: encrypted }
