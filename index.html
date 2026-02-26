@@ -176,9 +176,6 @@
             const user = document.getElementById('user').value;
             const pass = document.getElementById('pass').value;
 
-            // Encrypt before it leaves your computer
-            const encrypted = CryptoJS.AES.encrypt(pass, MASTER).toString();
-
             const { error } = await supabaseClient.from('passwords').insert([
                 { username: user, password: encrypted }
             ]);
